@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Notes App - IAM Authentication Demo",
-  description: "Simple, secure notes application demonstrating modern IAM authentication flows.",
+  title: "Notify Berry - Vendor Portal",
+  description: "Manage your Notify Berry vendor apps, broadcast notifications, and webhook subscriptions.",
 };
 
 export default function RootLayout({

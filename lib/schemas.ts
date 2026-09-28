@@ -81,3 +81,66 @@ export const noteSchema = z.object({
     .string()
     .min(1, "Content is required"),
 });
+
+export const createAppSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "App name must be at least 2 characters")
+    .max(100, "App name cannot exceed 100 characters"),
+  description: z
+    .string()
+    .trim()
+    .max(500, "Description cannot exceed 500 characters")
+    .optional()
+    .or(z.literal("")),
+  logo: z
+    .string()
+    .trim()
+    .refine(
+      (val) => !val || /^https?:\/\/.+/i.test(val),
+      "Logo must be a valid HTTP/HTTPS URL"
+    )
+    .optional()
+    .or(z.literal("")),
+  unicast_callback_url: z
+    .string()
+    .trim()
+    .refine(
+      (val) => !val || /^https:\/\/.+/i.test(val),
+      "Unicast callback URL must be a valid secure HTTPS URL (e.g. https://api.example.com/webhook)"
+    )
+    .optional()
+    .or(z.literal("")),
+});
+
+export const updateAppSchema = createAppSchema;
+
+export const sendNotificationSchema = z
+  .object({
+    type: z.enum(["broadcast", "unicast"]),
+    title: z
+      .string()
+      .trim()
+      .min(1, "Title is required")
+      .max(150, "Title cannot exceed 150 characters"),
+    message: z
+      .string()
+      .trim()
+      .min(1, "Message content is required")
+      .max(2000, "Message cannot exceed 2000 characters"),
+    recipient_id: z.string().trim().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.type === "unicast" && (!data.recipient_id || !data.recipient_id.trim())) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Recipient ID is required for Unicast direct memos",
+      path: ["recipient_id"],
+    }
+  );
+
