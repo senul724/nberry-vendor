@@ -81,8 +81,7 @@ export const authApi = {
 	},
 
 	async refresh(token?: string) {
-		console.log("in refresh");
-		return Promise<{ access_token: "dasds" }>;
+		console.log("in refresh", `${baseUrl}/auth/refresh`);
 		const res = await fetch(`${baseUrl}/auth/refresh`, {
 			method: "POST",
 			headers: {
@@ -377,33 +376,7 @@ export const appsApi = {
 					`Failed to fetch app stats (${res.status})`,
 			);
 		}
-		const raw = data.stats || data.data || data;
-		return {
-			broadcast_subscribers_count: Number(
-				raw.broadcast_subscribers_count ??
-					raw.broadcast_subscribers ??
-					raw.broadcastSubscribers ??
-					0,
-			),
-			unicast_subscribers_count: Number(
-				raw.unicast_subscribers_count ??
-					raw.unicast_subscribers ??
-					raw.unicastSubscribers ??
-					0,
-			),
-			total_broadcast_memos_sent: Number(
-				raw.total_broadcast_memos_sent ??
-					raw.broadcast_memos_sent ??
-					raw.totalBroadcastMemosSent ??
-					0,
-			),
-			total_direct_memos_sent: Number(
-				raw.total_direct_memos_sent ??
-					raw.direct_memos_sent ??
-					raw.totalDirectMemosSent ??
-					0,
-			),
-		};
+		return data as AppStats;
 	},
 
 	async testCallback(id: string, token: string): Promise<TestCallbackResult> {
@@ -470,9 +443,7 @@ export const appsApi = {
 					`Failed to rotate secret key (${res.status})`,
 			);
 		}
-		const secret_key =
-			data.secret_key || data.secretKey || data.app?.secret_key || "";
-		return { ...data, secret_key };
+		return { secret_key: data.secret_key };
 	},
 
 	async sendNotification(
